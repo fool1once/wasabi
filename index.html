@@ -16,7 +16,7 @@ body {
   overflow: hidden;
 }
 
-/* ===== MESSENGER TOP BAR ===== */
+/* ===== TOP BAR ===== */
 .top-bar {
   height: 56px;
   background: white;
@@ -41,7 +41,6 @@ body {
 }
 
 .name { font-weight: 600; }
-
 .icons { font-size: 18px; }
 
 /* ===== CHAT ===== */
@@ -55,8 +54,7 @@ body {
   border-radius: 18px;
   margin-bottom: 10px;
   position: relative;
-  opacity: 0;
-  animation: fadeIn .6s forwards;
+  animation: fadeIn .4s ease forwards;
 }
 
 .left { background: white; }
@@ -71,7 +69,7 @@ body {
   text-align: center;
 }
 
-/* MESSAGE REACTIONS ON BUBBLE */
+/* REACTIONS ON MESSAGE */
 .reacts {
   position: absolute;
   bottom: -14px;
@@ -83,8 +81,6 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,.15);
   display: flex;
   gap: 4px;
-  opacity: 0;
-  animation: fadeIn .6s forwards;
 }
 
 /* TYPING */
@@ -96,8 +92,6 @@ body {
   display: flex;
   gap: 5px;
   margin-bottom: 10px;
-  opacity: 0;
-  animation: fadeIn .6s forwards;
 }
 
 .typing span {
@@ -155,7 +149,7 @@ button {
   right: 0;
 }
 
-/* ===== FLOATING EMOJIS ===== */
+/* FLOATING EMOJI */
 .float {
   position: fixed;
   bottom: -30px;
@@ -184,20 +178,7 @@ button {
 </div>
 
 <!-- CHAT -->
-<div class="chat" id="chat">
-  <div class="bubble left">Hi 👋</div>
-  <div class="bubble right">Hello 💕</div>
-  <div class="bubble left">I wanted to ask you something…</div>
-
-  <div class="typing">
-    <span></span><span></span><span></span>
-  </div>
-
-  <div class="bubble center" id="question">
-    Will you be my Valentine? ❤️
-    <div class="reacts">❤️ 😍 🥰</div>
-  </div>
-</div>
+<div class="chat" id="chat"></div>
 
 <!-- BUTTONS -->
 <div class="card">
@@ -212,24 +193,65 @@ button {
 <audio id="yesSound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
 <script>
-const noBtn = document.getElementById("no");
-const yesBtn = document.getElementById("yes");
+const chat = document.getElementById("chat");
 const pop = document.getElementById("pop");
 const yesSound = document.getElementById("yesSound");
-const chat = document.getElementById("chat");
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
 
-/* POP SOUND FOR MESSAGES */
-document.querySelectorAll(".bubble").forEach((b,i)=>{
-  setTimeout(()=>{ pop.play(); }, i*800 + 300);
-});
+/* MESSAGE SYSTEM */
+function addBubble(text, side, reacts) {
+  const bubble = document.createElement("div");
+  bubble.className = `bubble ${side}`;
+  bubble.textContent = text;
 
-/* NO BUTTON — UNLIMITED ESCAPE */
-function moveNo(){
+  if (reacts) {
+    const r = document.createElement("div");
+    r.className = "reacts";
+    r.textContent = reacts;
+    bubble.appendChild(r);
+  }
+
+  chat.appendChild(bubble);
+  pop.currentTime = 0;
+  pop.play();
+}
+
+function showTyping() {
+  const typing = document.createElement("div");
+  typing.className = "typing";
+  typing.innerHTML = "<span></span><span></span><span></span>";
+  chat.appendChild(typing);
+  return typing;
+}
+
+/* CONVERSATION FLOW */
+setTimeout(() => addBubble("Hi 👋", "left"), 600);
+setTimeout(() => addBubble("Hello 💕", "right"), 1400);
+setTimeout(() => addBubble("I wanted to ask you something…", "left"), 2200);
+
+let typingEl;
+setTimeout(() => typingEl = showTyping(), 3000);
+
+setTimeout(() => {
+  typingEl.remove();
+  addBubble(
+    "Will you be my Valentine? ❤️",
+    "center",
+    "❤️ 😍 🥰"
+  );
+}, 4200);
+
+/* NO BUTTON — FIXED, NEVER DISAPPEARS */
+function moveNo() {
   pop.currentTime = 0;
   pop.play();
 
-  const x = Math.random() * (window.innerWidth - 100);
-  const y = Math.random() * (window.innerHeight - 120);
+  const btnW = noBtn.offsetWidth;
+  const btnH = noBtn.offsetHeight;
+
+  const x = Math.random() * (window.innerWidth - btnW - 20);
+  const y = Math.random() * (window.innerHeight - btnH - 100);
 
   noBtn.style.position = "fixed";
   noBtn.style.left = x + "px";
@@ -239,8 +261,8 @@ function moveNo(){
 noBtn.addEventListener("mouseenter", moveNo);
 noBtn.addEventListener("touchstart", moveNo);
 
-/* FLOATING EMOJI */
-function floatEmoji(){
+/* FLOATING EMOJIS */
+function floatEmoji() {
   const emojis = ["❤️","😍","🥰","💖","😘"];
   const e = document.createElement("div");
   e.className = "float";
@@ -248,26 +270,16 @@ function floatEmoji(){
   e.style.left = Math.random()*window.innerWidth + "px";
   e.style.fontSize = Math.random()*20 + 24 + "px";
   document.body.appendChild(e);
-  setTimeout(()=>e.remove(),4000);
+  setTimeout(() => e.remove(), 4000);
 }
 
-/* YES CLICK — BIG MOMENT */
-yesBtn.addEventListener("click",()=>{
+/* YES CLICK */
+yesBtn.addEventListener("click", () => {
   yesSound.play();
 
-  // Add new messages
-  const msg1 = document.createElement("div");
-  msg1.className = "bubble right";
-  msg1.innerHTML = `YAY!! 🥹💘 <div class="reacts">❤️❤️😍</div>`;
+  addBubble("YAY!! 🥹💘", "right", "❤️❤️😍");
+  setTimeout(() => addBubble("I knew you’d say yes 😳❤️", "left"), 800);
 
-  const msg2 = document.createElement("div");
-  msg2.className = "bubble left";
-  msg2.textContent = "I knew you’d say yes 😳❤️";
-
-  chat.appendChild(msg1);
-  chat.appendChild(msg2);
-
-  // Emoji storm
   setInterval(floatEmoji, 220);
 
   document.querySelector(".card").innerHTML =

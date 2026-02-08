@@ -53,6 +53,7 @@ body {
   padding: 12px 16px;
   border-radius: 18px;
   margin-bottom: 10px;
+  position: relative;
   animation: fadeIn .4s ease forwards;
 }
 
@@ -68,6 +69,44 @@ body {
   text-align: center;
 }
 
+.reacts {
+  position: absolute;
+  bottom: -14px;
+  right: 12px;
+  background: white;
+  border-radius: 14px;
+  padding: 2px 6px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  display: flex;
+  gap: 4px;
+}
+
+.typing {
+  width: 60px;
+  padding: 10px;
+  background: white;
+  border-radius: 20px;
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.typing span {
+  width: 6px;
+  height: 6px;
+  background: #aaa;
+  border-radius: 50%;
+  animation: blink 1.4s infinite both;
+}
+
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+
+@keyframes blink {
+  0%{opacity:.2} 20%{opacity:1} 100%{opacity:.2}
+}
+
 @keyframes fadeIn {
   from { opacity:0; transform: translateY(8px); }
   to { opacity:1; transform:none; }
@@ -79,14 +118,17 @@ body {
   bottom: 36px;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 5;
 }
 
+/* SAFE AREA FOR BUTTONS */
 .buttons {
   width: 280px;
   height: 80px;
   position: relative;
 }
 
+/* BUTTONS */
 button {
   padding: 14px 24px;
   font-size: 18px;
@@ -100,21 +142,35 @@ button {
   color: white;
 }
 
-/* 😈 NO BUTTON */
 #no {
   background: #6c757d;
   color: white;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: transform 0.25s ease;
+}
+
+/* FLOATING EMOJI */
+.float {
   position: fixed;
-  left: 60%;
-  bottom: 36px;
-  transition: transform 0.15s ease;
-  z-index: 999;
+  bottom: -30px;
+  animation: floatUp 4s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes floatUp {
+  to {
+    transform: translateY(-120vh) scale(1.3);
+    opacity: 0;
+  }
 }
 </style>
 </head>
 
 <body>
 
+<!-- TOP BAR -->
 <div class="top-bar">
   <div class="profile">
     <div class="avatar"></div>
@@ -123,77 +179,107 @@ button {
   <div class="icons">📞 🎥 ⓘ</div>
 </div>
 
+<!-- CHAT -->
 <div class="chat" id="chat"></div>
 
+<!-- BUTTONS -->
 <div class="card">
-  <div class="buttons">
+  <div class="buttons" id="buttonBox">
     <button id="yes">Yes 💖</button>
     <button id="no">No 😢</button>
   </div>
 </div>
 
+<!-- SOUNDS -->
 <audio id="pop" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+<audio id="yesSound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
 <script>
 const chat = document.getElementById("chat");
-const noBtn = document.getElementById("no");
 const pop = document.getElementById("pop");
+const yesSound = document.getElementById("yesSound");
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+const box = document.getElementById("buttonBox");
 
-/* CHAT */
-function addBubble(text, side) {
-  const b = document.createElement("div");
-  b.className = `bubble ${side}`;
-  b.textContent = text;
-  chat.appendChild(b);
+/* MESSAGE FLOW */
+function addBubble(text, side, reacts) {
+  const bubble = document.createElement("div");
+  bubble.className = `bubble ${side}`;
+  bubble.textContent = text;
+
+  if (reacts) {
+    const r = document.createElement("div");
+    r.className = "reacts";
+    r.textContent = reacts;
+    bubble.appendChild(r);
+  }
+
+  chat.appendChild(bubble);
+  pop.currentTime = 0;
+  pop.play();
 }
 
-setTimeout(() => addBubble("Will you be my Valentine? ❤️", "center"), 800);
+function showTyping() {
+  const typing = document.createElement("div");
+  typing.className = "typing";
+  typing.innerHTML = "<span></span><span></span><span></span>";
+  chat.appendChild(typing);
+  return typing;
+}
 
-/* 🧠 SMART NO BUTTON (SCREEN-SAFE) */
-let moveDistance = 60;   // base movement (px)
-const maxMove = 140;     // cap so it never disappears
+setTimeout(() => addBubble("Hi 👋", "left"), 600);
+setTimeout(() => addBubble("Hello 💕", "right"), 1400);
+setTimeout(() => addBubble("I wanted to ask you something…", "left"), 2200);
 
-function flee(e) {
+let typingEl;
+setTimeout(() => typingEl = showTyping(), 3000);
+setTimeout(() => {
+  typingEl.remove();
+  addBubble("Will you be my Valentine? ❤️", "center", "❤️ 😍 🥰");
+}, 4300);
+
+/* ✅ NO BUTTON — FLOATS FOREVER, NEVER DISAPPEARS */
+function moveNo() {
   pop.currentTime = 0;
   pop.play();
 
-  moveDistance = Math.min(moveDistance + 10, maxMove);
+  const maxX = box.clientWidth - noBtn.offsetWidth;
+  const maxY = box.clientHeight - noBtn.offsetHeight;
 
-  const rect = noBtn.getBoundingClientRect();
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  const x = Math.random() * maxX;
+  const y = Math.random() * maxY;
 
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-
-  const px = e.clientX ?? cx;
-  const py = e.clientY ?? cy;
-
-  let dx = cx - px;
-  let dy = cy - py;
-
-  // Choose dominant direction only (L / R / U / D)
-  if (Math.abs(dx) > Math.abs(dy)) {
-    dx = Math.sign(dx) * moveDistance;
-    dy = 0;
-  } else {
-    dy = Math.sign(dy) * moveDistance;
-    dx = 0;
-  }
-
-  let newX = rect.left + dx;
-  let newY = rect.top + dy;
-
-  // Clamp to screen (mobile safe)
-  newX = Math.max(8, Math.min(newX, vw - rect.width - 8));
-  newY = Math.max(64, Math.min(newY, vh - rect.height - 8));
-
-  noBtn.style.left = newX + "px";
-  noBtn.style.top = newY + "px";
+  noBtn.style.transform = `translate(${x}px, ${y}px)`;
 }
 
-noBtn.addEventListener("mouseenter", flee);
-noBtn.addEventListener("touchstart", flee, { passive: true });
+noBtn.addEventListener("mouseenter", moveNo);
+noBtn.addEventListener("touchstart", moveNo);
+
+/* FLOATING EMOJIS */
+function floatEmoji() {
+  const emojis = ["❤️","😍","🥰","💖","😘"];
+  const e = document.createElement("div");
+  e.className = "float";
+  e.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+  e.style.left = Math.random()*window.innerWidth + "px";
+  e.style.fontSize = Math.random()*20 + 24 + "px";
+  document.body.appendChild(e);
+  setTimeout(()=>e.remove(),4000);
+}
+
+/* YES CLICK — ONLY THEN NO IS GONE */
+yesBtn.addEventListener("click", () => {
+  yesSound.play();
+
+  addBubble("YAY!! 🥹💘", "right", "❤️❤️😍");
+  setTimeout(() => addBubble("I knew you’d say yes 😳❤️", "left"), 800);
+
+  setInterval(floatEmoji, 220);
+
+  document.querySelector(".card").innerHTML =
+    "<h2 style='text-align:center'>Best choice ever 💞</h2>";
+});
 </script>
 
 </body>

@@ -69,7 +69,6 @@ body {
   text-align: center;
 }
 
-/* REACTIONS ON MESSAGE */
 .reacts {
   position: absolute;
   bottom: -14px;
@@ -83,7 +82,6 @@ body {
   gap: 4px;
 }
 
-/* TYPING */
 .typing {
   width: 60px;
   padding: 10px;
@@ -123,12 +121,14 @@ body {
   z-index: 5;
 }
 
+/* SAFE AREA FOR BUTTONS */
 .buttons {
-  width: 260px;
-  height: 70px;
+  width: 280px;
+  height: 80px;
   position: relative;
 }
 
+/* BUTTONS */
 button {
   padding: 14px 24px;
   font-size: 18px;
@@ -147,6 +147,8 @@ button {
   color: white;
   position: absolute;
   right: 0;
+  top: 0;
+  transition: transform 0.25s ease;
 }
 
 /* FLOATING EMOJI */
@@ -182,7 +184,7 @@ button {
 
 <!-- BUTTONS -->
 <div class="card">
-  <div class="buttons">
+  <div class="buttons" id="buttonBox">
     <button id="yes">Yes 💖</button>
     <button id="no">No 😢</button>
   </div>
@@ -198,8 +200,9 @@ const pop = document.getElementById("pop");
 const yesSound = document.getElementById("yesSound");
 const noBtn = document.getElementById("no");
 const yesBtn = document.getElementById("yes");
+const box = document.getElementById("buttonBox");
 
-/* MESSAGE SYSTEM */
+/* MESSAGE FLOW */
 function addBubble(text, side, reacts) {
   const bubble = document.createElement("div");
   bubble.className = `bubble ${side}`;
@@ -225,37 +228,29 @@ function showTyping() {
   return typing;
 }
 
-/* CONVERSATION FLOW */
 setTimeout(() => addBubble("Hi 👋", "left"), 600);
 setTimeout(() => addBubble("Hello 💕", "right"), 1400);
 setTimeout(() => addBubble("I wanted to ask you something…", "left"), 2200);
 
 let typingEl;
 setTimeout(() => typingEl = showTyping(), 3000);
-
 setTimeout(() => {
   typingEl.remove();
-  addBubble(
-    "Will you be my Valentine? ❤️",
-    "center",
-    "❤️ 😍 🥰"
-  );
-}, 4200);
+  addBubble("Will you be my Valentine? ❤️", "center", "❤️ 😍 🥰");
+}, 4300);
 
-/* NO BUTTON — FIXED, NEVER DISAPPEARS */
+/* ✅ NO BUTTON — FLOATS FOREVER, NEVER DISAPPEARS */
 function moveNo() {
   pop.currentTime = 0;
   pop.play();
 
-  const btnW = noBtn.offsetWidth;
-  const btnH = noBtn.offsetHeight;
+  const maxX = box.clientWidth - noBtn.offsetWidth;
+  const maxY = box.clientHeight - noBtn.offsetHeight;
 
-  const x = Math.random() * (window.innerWidth - btnW - 20);
-  const y = Math.random() * (window.innerHeight - btnH - 100);
+  const x = Math.random() * maxX;
+  const y = Math.random() * maxY;
 
-  noBtn.style.position = "fixed";
-  noBtn.style.left = x + "px";
-  noBtn.style.top = y + "px";
+  noBtn.style.transform = `translate(${x}px, ${y}px)`;
 }
 
 noBtn.addEventListener("mouseenter", moveNo);
@@ -270,10 +265,10 @@ function floatEmoji() {
   e.style.left = Math.random()*window.innerWidth + "px";
   e.style.fontSize = Math.random()*20 + 24 + "px";
   document.body.appendChild(e);
-  setTimeout(() => e.remove(), 4000);
+  setTimeout(()=>e.remove(),4000);
 }
 
-/* YES CLICK */
+/* YES CLICK — ONLY THEN NO IS GONE */
 yesBtn.addEventListener("click", () => {
   yesSound.play();
 

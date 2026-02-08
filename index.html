@@ -20,6 +20,7 @@
             align-items: center;
             overflow: hidden;
             position: relative;
+            touch-action: none;
         }
         
         .container {
@@ -93,16 +94,6 @@
             border: 2px solid #e9ecef;
             position: absolute;
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .no-button.evading {
-            animation: evade 0.6s ease-out;
-        }
-        
-        @keyframes evade {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: scale(0.95); }
-            100% { transform: translate(var(--tx), var(--ty)) scale(1); }
         }
         
         .message {
@@ -219,20 +210,18 @@
         }
         
         // Smooth evasion for No button
-        function evadeCursor(e) {
+        function evadeCursor(clientX, clientY) {
             if (isEvading) return;
             
             const noRect = noButton.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
-            const cursorX = e.clientX;
-            const cursorY = e.clientY;
             
             // Calculate distance from cursor to button center
             const buttonCenterX = noRect.left + noRect.width / 2;
             const buttonCenterY = noRect.top + noRect.height / 2;
             const distance = Math.sqrt(
-                Math.pow(cursorX - buttonCenterX, 2) + 
-                Math.pow(cursorY - buttonCenterY, 2)
+                Math.pow(clientX - buttonCenterX, 2) + 
+                Math.pow(clientY - buttonCenterY, 2)
             );
             
             // Only evade if cursor is close enough (150px threshold)
@@ -240,7 +229,7 @@
                 isEvading = true;
                 
                 // Calculate escape direction (opposite to cursor)
-                const angle = Math.atan2(buttonCenterY - cursorY, buttonCenterX - cursorX);
+                const angle = Math.atan2(buttonCenterY - clientY, buttonCenterX - clientX);
                 const escapeDistance = 200; // pixels to move
                 
                 // Calculate new position
@@ -255,5 +244,23 @@
                 newY = Math.max(0, Math.min(newY, maxY));
                 
                 // Apply smooth transition
-                noButton.style.setProperty('--tx', (newX - (noRect.left - containerRect.left)) + 'px');
-                noButton.style.setProperty('--
+                noButton.style.position = 'absolute';
+                noButton.style.left = newX + 'px';
+                noButton.style.top = newY + 'px';
+                
+                // Reset evasion flag after animation
+                clearTimeout(evadeTimeout);
+                evadeTimeout = setTimeout(() => {
+                    isEvading = false;
+                }, 600);
+            }
+        }
+        
+        // Mouse events
+        document.addEventListener('mousemove', (e) => {
+            evadeCursor(e.clientX, e.clientY);
+        });
+        
+        // Touch events for mobile
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 

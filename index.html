@@ -1,45 +1,220 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Valentine Prank</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will you be my valentine?</title>
+    <style>
+        body {
+            background-color: #ffc0cb;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 40px;
+            border-radius: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .yes-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .no-button {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .heart {
+            font-size: 1.5rem;
+            margin-left: 10px;
+            color: #ff4081;
+        }
+        
+        .message {
+            display: none;
+            margin-top: 30px;
+            font-size: 1.5rem;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        
+        .message p {
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
-
-<!-- INTRO SCREEN -->
-
-<div id="intro">
-    <h1>Would you be my Valentine? ❤️</h1>
-</div>
-
-<!-- MAIN APP -->
-
-<div id="app" class="hidden">
-    <div class="card">
-        <h2>Will you be my valentine? 💖</h2>
-
-```
-    <div class="buttons">
-        <button id="yesBtn">Yes 💘</button>
-        <button id="noBtn">No 💔</button>
+    <div class="container">
+        <h1>Will you be my valentine? <span class="heart">❤️</span></h1>
+        <div class="buttons">
+            <button class="button yes-button" id="yesButton">Yes</button>
+            <button class="button no-button" id="noButton">No</button>
+        </div>
+        <div class="message" id="message">
+            <p>Thank youuu! 💖</p>
+        </div>
     </div>
-</div>
-```
 
-</div>
-
-<!-- POPUP -->
-
-<div id="popup" class="hidden">
-    <div class="popup-box">
-        <h2 id="popupText">Yay! Thank youuu ❤️</h2>
-        <button onclick="closePopup()">Close</button>
-    </div>
-</div>
-
-<script src="script.js"></script>
-
+    <script>
+        const yesButton = document.getElementById('yesButton');
+        const noButton = document.getElementById('noButton');
+        const message = document.getElementById('message');
+        const container = document.querySelector('.container');
+        
+        // Make the "No" button run away when cursor gets close
+        noButton.addEventListener('mouseenter', function(e) {
+            // Get button position
+            const buttonRect = noButton.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            // Calculate available space
+            const containerWidth = containerRect.width;
+            const containerHeight = containerRect.height;
+            const buttonWidth = buttonRect.width;
+            const buttonHeight = buttonRect.height;
+            
+            // Generate random position that's far from cursor
+            let newX, newY;
+            
+            // Get cursor position relative to container
+            const cursorX = e.clientX - containerRect.left;
+            const cursorY = e.clientY - containerRect.top;
+            
+            // Try to place button on opposite side of cursor
+            if (cursorX < containerWidth / 2) {
+                newX = Math.random() * (containerWidth - buttonWidth - 100) + containerWidth / 2 + 50;
+            } else {
+                newX = Math.random() * (containerWidth / 2 - buttonWidth - 50);
+            }
+            
+            if (cursorY < containerHeight / 2) {
+                newY = Math.random() * (containerHeight - buttonHeight - 100) + containerHeight / 2 + 50;
+            } else {
+                newY = Math.random() * (containerHeight / 2 - buttonHeight - 50);
+            }
+            
+            // Apply new position
+            noButton.style.position = 'absolute';
+            noButton.style.left = `${newX}px`;
+            noButton.style.top = `${newY}px`;
+            
+            // Add animation
+            noButton.style.transition = 'all 0.5s ease';
+            noButton.style.transform = 'scale(1.2)';
+            
+            // Reset transform after animation
+            setTimeout(() => {
+                noButton.style.transform = 'scale(1)';
+            }, 500);
+        });
+        
+        // Reset button position when mouse leaves
+        noButton.addEventListener('mouseleave', function() {
+            noButton.style.position = 'static';
+            noButton.style.left = 'auto';
+            noButton.style.top = 'auto';
+        });
+        
+        // Handle "Yes" button click
+        yesButton.addEventListener('click', function() {
+            // Show thank you message
+            message.style.display = 'block';
+            
+            // Add animation to yes button
+            yesButton.style.transform = 'scale(1.2)';
+            yesButton.style.boxShadow = '0 0 20px #4CAF50';
+            
+            // Reset after animation
+            setTimeout(() => {
+                yesButton.style.transform = 'scale(1)';
+                yesButton.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+            }, 500);
+            
+            // Hide the no button
+            noButton.style.display = 'none';
+            
+            // Add some celebration effect
+            const heart = document.createElement('div');
+            heart.textContent = '❤️';
+            heart.style.fontSize = '4rem';
+            heart.style.position = 'absolute';
+            heart.style.top = '50%';
+            heart.style.left = '50%';
+            heart.style.transform = 'translate(-50%, -50%)';
+            heart.style.opacity = '0';
+            heart.style.transition = 'all 1s ease';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.style.opacity = '1';
+                heart.style.transform = 'translate(-50%, -50%) scale(2)';
+            }, 100);
+            
+            setTimeout(() => {
+                heart.style.opacity = '0';
+                heart.style.transform = 'translate(-50%, -50%) scale(0)';
+            }, 2000);
+        });
+        
+        // Make sure the no button stays within container bounds
+        document.addEventListener('mousemove', function(e) {
+            const buttonRect = noButton.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            if (noButton.style.position === 'absolute') {
+                const buttonWidth = buttonRect.width;
+                const buttonHeight = buttonRect.height;
+                
+                // Ensure button stays within container
+                let left = parseFloat(noButton.style.left);
+                let top = parseFloat(noButton.style.top);
+                
+                if (left < 0) left = 0;
+                if (left + buttonWidth > containerRect.width) left = containerRect.width - buttonWidth;
+                if (top < 0) top = 0;
+                if (top + buttonHeight > containerRect.height) top = containerRect.height - buttonHeight;
+                
+                noButton.style.left = `${left}px`;
+                noButton.style.top = `${top}px`;
+            }
+        });
+    </script>
 </body>
 </html>

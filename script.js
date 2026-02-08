@@ -1,62 +1,57 @@
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 
-// MOVE NO BUTTON FAR AWAY
-function moveNoButton() {
-  const maxX = window.innerWidth - noBtn.offsetWidth;
-  const maxY = window.innerHeight - noBtn.offsetHeight;
-
-  const x = Math.random() * maxX;
-  const y = Math.random() * maxY;
+/* NO BUTTON TELEPORT (FAR + SAFE) */
+function moveNo() {
+  const padding = 20;
+  const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding);
+  const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - padding);
 
   noBtn.style.position = "fixed";
   noBtn.style.left = `${x}px`;
   noBtn.style.top = `${y}px`;
 }
 
-// Desktop + mobile
-noBtn.addEventListener("mouseenter", moveNoButton);
-noBtn.addEventListener("touchstart", moveNoButton);
+noBtn.addEventListener("mouseenter", moveNo);
+noBtn.addEventListener("touchstart", moveNo);
 
-// YES CLICK
-yesBtn.addEventListener("click", () => {
-  startConfetti();
-  document.querySelector(".card").innerHTML =
-    "<h1>YAY!! 💘🥰</h1>";
-});
-
-// 🎉 CONFETTI
+/* CONFETTI FIXED (VISIBLE ON LAPTOP + MOBILE) */
 const canvas = document.getElementById("confetti");
 const ctx = canvas.getContext("2d");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
-let confettiPieces = [];
+let confetti = [];
 
 function startConfetti() {
-  confettiPieces = Array.from({ length: 150 }).map(() => ({
+  confetti = Array.from({ length: 200 }).map(() => ({
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height - canvas.height,
     r: Math.random() * 6 + 4,
-    d: Math.random() * 10 + 5,
-    color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+    d: Math.random() * 5 + 3,
+    color: `hsl(${Math.random() * 360}, 100%, 60%)`
   }));
-  requestAnimationFrame(drawConfetti);
+  requestAnimationFrame(draw);
 }
 
-function drawConfetti() {
+function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  confettiPieces.forEach(p => {
+  confetti.forEach(p => {
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
     ctx.fillStyle = p.color;
     ctx.fill();
     p.y += p.d;
   });
-
-  if (confettiPieces.some(p => p.y < canvas.height)) {
-    requestAnimationFrame(drawConfetti);
-  }
+  requestAnimationFrame(draw);
 }
+
+yesBtn.addEventListener("click", () => {
+  startConfetti();
+  document.querySelector(".card").innerHTML = "<h1>YAY!! 💘🥰</h1>";
+});

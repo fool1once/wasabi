@@ -1,11 +1,14 @@
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
+const popSound = document.getElementById("popSound");
+const yesSound = document.getElementById("yesSound");
+const heartsContainer = document.getElementById("hearts");
 
-/* NO BUTTON TELEPORT (FAR + SAFE) */
+/* MOVE NO BUTTON FAR */
 function moveNo() {
-  const padding = 20;
-  const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding);
-  const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - padding);
+  popSound.play();
+  const x = Math.random() * (window.innerWidth - 100);
+  const y = Math.random() * (window.innerHeight - 200);
 
   noBtn.style.position = "fixed";
   noBtn.style.left = `${x}px`;
@@ -15,43 +18,20 @@ function moveNo() {
 noBtn.addEventListener("mouseenter", moveNo);
 noBtn.addEventListener("touchstart", moveNo);
 
-/* CONFETTI FIXED (VISIBLE ON LAPTOP + MOBILE) */
-const canvas = document.getElementById("confetti");
-const ctx = canvas.getContext("2d");
+/* FLOATING HEARTS */
+function createHeart() {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.textContent = "💖";
+  heart.style.left = Math.random() * window.innerWidth + "px";
+  heart.style.fontSize = Math.random() * 20 + 20 + "px";
+  document.body.appendChild(heart);
 
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-let confetti = [];
-
-function startConfetti() {
-  confetti = Array.from({ length: 200 }).map(() => ({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height - canvas.height,
-    r: Math.random() * 6 + 4,
-    d: Math.random() * 5 + 3,
-    color: `hsl(${Math.random() * 360}, 100%, 60%)`
-  }));
-  requestAnimationFrame(draw);
-}
-
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  confetti.forEach(p => {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = p.color;
-    ctx.fill();
-    p.y += p.d;
-  });
-  requestAnimationFrame(draw);
+  setTimeout(() => heart.remove(), 4000);
 }
 
 yesBtn.addEventListener("click", () => {
-  startConfetti();
-  document.querySelector(".card").innerHTML = "<h1>YAY!! 💘🥰</h1>";
+  yesSound.play();
+  setInterval(createHeart, 200);
+  document.querySelector(".card").innerHTML = "<h2>YAY!! 💘🥰</h2>";
 });

@@ -146,9 +146,9 @@ button {
   background: #6c757d;
   color: white;
   position: absolute;
-  right: 0;
+  left: 180px;
   top: 0;
-  transition: transform 0.25s ease;
+  transition: left 0.25s ease, top 0.25s ease;
 }
 
 /* FLOATING EMOJI */
@@ -239,7 +239,7 @@ setTimeout(() => {
   addBubble("Will you be my Valentine? ❤️", "center", "❤️ 😍 🥰");
 }, 4300);
 
-/* ✅ NO BUTTON — FLOATS FOREVER, NEVER DISAPPEARS */
+/* ✅ FIXED NO BUTTON — NEVER GOES OFF SCREEN */
 function moveNo() {
   pop.currentTime = 0;
   pop.play();
@@ -250,11 +250,12 @@ function moveNo() {
   const x = Math.random() * maxX;
   const y = Math.random() * maxY;
 
-  noBtn.style.transform = `translate(${x}px, ${y}px)`;
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
 }
 
 noBtn.addEventListener("mouseenter", moveNo);
-noBtn.addEventListener("touchstart", moveNo);
+noBtn.addEventListener("touchstart", moveNo, { passive: true });
 
 /* FLOATING EMOJIS */
 function floatEmoji() {
@@ -268,7 +269,7 @@ function floatEmoji() {
   setTimeout(()=>e.remove(),4000);
 }
 
-/* YES CLICK — ONLY THEN NO IS GONE */
+/* YES CLICK */
 yesBtn.addEventListener("click", () => {
   yesSound.play();
 

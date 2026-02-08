@@ -2,13 +2,28 @@ const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 const popSound = document.getElementById("popSound");
 const yesSound = document.getElementById("yesSound");
-const heartsContainer = document.getElementById("hearts");
 
-/* MOVE NO BUTTON FAR */
+let noClicks = 0;
+
+/* NO BUTTON LOGIC */
 function moveNo() {
+  popSound.currentTime = 0;
   popSound.play();
-  const x = Math.random() * (window.innerWidth - 100);
-  const y = Math.random() * (window.innerHeight - 200);
+
+  noClicks++;
+
+  // After 2 dodges → vanish
+  if (noClicks >= 3) {
+    noBtn.style.transition = "transform 0.4s, opacity 0.4s";
+    noBtn.style.transform = "scale(0)";
+    noBtn.style.opacity = "0";
+    setTimeout(() => noBtn.remove(), 400);
+    return;
+  }
+
+  const padding = 20;
+  const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding);
+  const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - padding);
 
   noBtn.style.position = "fixed";
   noBtn.style.left = `${x}px`;
@@ -18,20 +33,38 @@ function moveNo() {
 noBtn.addEventListener("mouseenter", moveNo);
 noBtn.addEventListener("touchstart", moveNo);
 
-/* FLOATING HEARTS */
-function createHeart() {
-  const heart = document.createElement("div");
-  heart.className = "heart";
-  heart.textContent = "💖";
-  heart.style.left = Math.random() * window.innerWidth + "px";
-  heart.style.fontSize = Math.random() * 20 + 20 + "px";
-  document.body.appendChild(heart);
+/* FLOATING HEARTS + EMOJI REACTIONS */
+function createReaction() {
+  const reactions = ["❤️", "😍", "🥰", "💖", "😘"];
+  const emoji = document.createElement("div");
+  emoji.className = "reaction";
+  emoji.textContent = reactions[Math.floor(Math.random() * reactions.length)];
 
-  setTimeout(() => heart.remove(), 4000);
+  emoji.style.left = Math.random() * window.innerWidth + "px";
+  emoji.style.fontSize = Math.random() * 20 + 24 + "px";
+
+  document.body.appendChild(emoji);
+
+  setTimeout(() => emoji.remove(), 3500);
 }
 
+/* YES CLICK */
 yesBtn.addEventListener("click", () => {
+  yesSound.currentTime = 0;
   yesSound.play();
-  setInterval(createHeart, 200);
-  document.querySelector(".card").innerHTML = "<h2>YAY!! 💘🥰</h2>";
+
+  setInterval(createReaction, 250);
+
+  document.querySelector(".card").innerHTML = `
+    <h2>YAY!! 💘🥰</h2>
+    <p>Best decision ever 😌</p>
+  `;
+});
+
+/* MESSAGE POP SOUNDS */
+document.querySelectorAll(".bubble").forEach((bubble, i) => {
+  setTimeout(() => {
+    popSound.currentTime = 0;
+    popSound.play();
+  }, i * 1000 + 500);
 });

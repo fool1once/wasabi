@@ -5,82 +5,175 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Will you be my valentine?</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            background-color: #ffc0cb;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
             overflow: hidden;
+            position: relative;
         }
         
         .container {
             text-align: center;
-            padding: 40px;
-            border-radius: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 3rem 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             max-width: 500px;
+            width: 90%;
+            position: relative;
         }
         
         h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 2.5rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .heart {
+            display: inline-block;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            color: #ff6b6b;
+            margin-left: 8px;
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
         
         .buttons {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-top: 30px;
+            gap: 2rem;
+            margin-top: 2rem;
+            position: relative;
+            min-height: 60px;
         }
         
         .button {
-            padding: 15px 30px;
+            padding: 1rem 2.5rem;
             border: none;
             border-radius: 50px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 10;
         }
         
         .yes-button {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .yes-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
         }
         
         .no-button {
-            background-color: #f44336;
-            color: white;
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+            position: absolute;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .heart {
-            font-size: 1.5rem;
-            margin-left: 10px;
-            color: #ff4081;
+        .no-button.evading {
+            animation: evade 0.6s ease-out;
+        }
+        
+        @keyframes evade {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1); }
         }
         
         .message {
             display: none;
-            margin-top: 30px;
-            font-size: 1.5rem;
-            color: #333;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 16px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.4);
+            animation: slideUp 0.5s ease-out;
         }
         
-        .message p {
-            margin: 0;
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .floating-heart {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+            opacity: 0.7;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 2rem 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .buttons {
+                gap: 1rem;
+            }
+            
+            .button {
+                padding: 0.8rem 1.8rem;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="floating-hearts" id="floatingHearts"></div>
+    
     <div class="container">
         <h1>Will you be my valentine? <span class="heart">❤️</span></h1>
         <div class="buttons">
@@ -88,7 +181,7 @@
             <button class="button no-button" id="noButton">No</button>
         </div>
         <div class="message" id="message">
-            <p>Thank youuu! 💖</p>
+            Thank youuu! 💕
         </div>
     </div>
 
@@ -97,124 +190,70 @@
         const noButton = document.getElementById('noButton');
         const message = document.getElementById('message');
         const container = document.querySelector('.container');
+        const floatingHearts = document.getElementById('floatingHearts');
         
-        // Make the "No" button run away when cursor gets close
-        noButton.addEventListener('mouseenter', function(e) {
-            // Get button position
-            const buttonRect = noButton.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            
-            // Calculate available space
-            const containerWidth = containerRect.width;
-            const containerHeight = containerRect.height;
-            const buttonWidth = buttonRect.width;
-            const buttonHeight = buttonRect.height;
-            
-            // Generate random position that's far from cursor
-            let newX, newY;
-            
-            // Get cursor position relative to container
-            const cursorX = e.clientX - containerRect.left;
-            const cursorY = e.clientY - containerRect.top;
-            
-            // Try to place button on opposite side of cursor
-            if (cursorX < containerWidth / 2) {
-                newX = Math.random() * (containerWidth - buttonWidth - 100) + containerWidth / 2 + 50;
-            } else {
-                newX = Math.random() * (containerWidth / 2 - buttonWidth - 50);
-            }
-            
-            if (cursorY < containerHeight / 2) {
-                newY = Math.random() * (containerHeight - buttonHeight - 100) + containerHeight / 2 + 50;
-            } else {
-                newY = Math.random() * (containerHeight / 2 - buttonHeight - 50);
-            }
-            
-            // Apply new position
-            noButton.style.position = 'absolute';
-            noButton.style.left = `${newX}px`;
-            noButton.style.top = `${newY}px`;
-            
-            // Add animation
-            noButton.style.transition = 'all 0.5s ease';
-            noButton.style.transform = 'scale(1.2)';
-            
-            // Reset transform after animation
-            setTimeout(() => {
-                noButton.style.transform = 'scale(1)';
-            }, 500);
-        });
+        let isEvading = false;
+        let evadeTimeout;
         
-        // Reset button position when mouse leaves
-        noButton.addEventListener('mouseleave', function() {
-            noButton.style.position = 'static';
-            noButton.style.left = 'auto';
-            noButton.style.top = 'auto';
-        });
-        
-        // Handle "Yes" button click
-        yesButton.addEventListener('click', function() {
-            // Show thank you message
-            message.style.display = 'block';
-            
-            // Add animation to yes button
-            yesButton.style.transform = 'scale(1.2)';
-            yesButton.style.boxShadow = '0 0 20px #4CAF50';
-            
-            // Reset after animation
-            setTimeout(() => {
-                yesButton.style.transform = 'scale(1)';
-                yesButton.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-            }, 500);
-            
-            // Hide the no button
-            noButton.style.display = 'none';
-            
-            // Add some celebration effect
+        // Create floating hearts background
+        function createFloatingHeart() {
             const heart = document.createElement('div');
-            heart.textContent = '❤️';
-            heart.style.fontSize = '4rem';
-            heart.style.position = 'absolute';
-            heart.style.top = '50%';
-            heart.style.left = '50%';
-            heart.style.transform = 'translate(-50%, -50%)';
-            heart.style.opacity = '0';
-            heart.style.transition = 'all 1s ease';
-            document.body.appendChild(heart);
+            heart.className = 'floating-heart';
+            heart.textContent = ['❤️', '💕', '💖', '💗'][Math.floor(Math.random() * 4)];
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDelay = Math.random() * 3 + 's';
+            heart.style.animationDuration = (3 + Math.random() * 2) + 's';
+            floatingHearts.appendChild(heart);
             
             setTimeout(() => {
-                heart.style.opacity = '1';
-                heart.style.transform = 'translate(-50%, -50%) scale(2)';
-            }, 100);
-            
-            setTimeout(() => {
-                heart.style.opacity = '0';
-                heart.style.transform = 'translate(-50%, -50%) scale(0)';
-            }, 2000);
-        });
+                heart.remove();
+            }, 5000);
+        }
         
-        // Make sure the no button stays within container bounds
-        document.addEventListener('mousemove', function(e) {
-            const buttonRect = noButton.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
+        // Create floating hearts periodically
+        setInterval(createFloatingHeart, 2000);
+        
+        // Create initial hearts
+        for (let i = 0; i < 5; i++) {
+            setTimeout(createFloatingHeart, i * 400);
+        }
+        
+        // Smooth evasion for No button
+        function evadeCursor(e) {
+            if (isEvading) return;
             
-            if (noButton.style.position === 'absolute') {
-                const buttonWidth = buttonRect.width;
-                const buttonHeight = buttonRect.height;
+            const noRect = noButton.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            const cursorX = e.clientX;
+            const cursorY = e.clientY;
+            
+            // Calculate distance from cursor to button center
+            const buttonCenterX = noRect.left + noRect.width / 2;
+            const buttonCenterY = noRect.top + noRect.height / 2;
+            const distance = Math.sqrt(
+                Math.pow(cursorX - buttonCenterX, 2) + 
+                Math.pow(cursorY - buttonCenterY, 2)
+            );
+            
+            // Only evade if cursor is close enough (150px threshold)
+            if (distance < 150) {
+                isEvading = true;
                 
-                // Ensure button stays within container
-                let left = parseFloat(noButton.style.left);
-                let top = parseFloat(noButton.style.top);
+                // Calculate escape direction (opposite to cursor)
+                const angle = Math.atan2(buttonCenterY - cursorY, buttonCenterX - cursorX);
+                const escapeDistance = 200; // pixels to move
                 
-                if (left < 0) left = 0;
-                if (left + buttonWidth > containerRect.width) left = containerRect.width - buttonWidth;
-                if (top < 0) top = 0;
-                if (top + buttonHeight > containerRect.height) top = containerRect.height - buttonHeight;
+                // Calculate new position
+                let newX = noRect.left - containerRect.left + Math.cos(angle) * escapeDistance;
+                let newY = noRect.top - containerRect.top + Math.sin(angle) * escapeDistance;
                 
-                noButton.style.left = `${left}px`;
-                noButton.style.top = `${top}px`;
-            }
-        });
-    </script>
-</body>
-</html>
+                // Keep button within container bounds
+                const maxX = containerRect.width - noRect.width;
+                const maxY = containerRect.height - noRect.height;
+                
+                newX = Math.max(0, Math.min(newX, maxX));
+                newY = Math.max(0, Math.min(newY, maxY));
+                
+                // Apply smooth transition
+                noButton.style.setProperty('--tx', (newX - (noRect.left - containerRect.left)) + 'px');
+                noButton.style.setProperty('--

@@ -3,33 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Valentine?</title>
+  <title>Valentine 💕</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- BACKGROUND CHAT -->
-  <div class="chat-bg">
-    <div class="bubble left delay1">Hi 👋</div>
-    <div class="bubble right delay2">Hello 💕</div>
-    <div class="bubble left delay3">I like you…</div>
-    <div class="bubble right delay4">Really? 🥺</div>
-    <div class="bubble center delay5">Will you be my Valentine? ❤️</div>
+<!-- FAKE MESSENGER BAR -->
+<div class="top-bar">
+  <div class="profile">
+    <div class="avatar"></div>
+    <div class="name">Crush 💗</div>
+  </div>
+  <div class="icons">📞 🎥 ⓘ</div>
+</div>
+
+<!-- CHAT AREA -->
+<div class="chat-area">
+  <div class="bubble left show">Hi 👋</div>
+  <div class="bubble right show delay1">Hello 💕</div>
+  <div class="bubble left show delay2">I was thinking…</div>
+
+  <div class="typing delay3">
+    <span></span><span></span><span></span>
   </div>
 
-  <!-- CONFETTI -->
-  <canvas id="confetti"></canvas>
-
-  <!-- CARD -->
-  <div class="card">
-    <h1>Will you be my Valentine? ❤️</h1>
-
-    <div class="buttons">
-      <button id="yesBtn">Yes 💖</button>
-      <button id="noBtn">No 😢</button>
-    </div>
+  <div class="bubble center show delay4">
+    Will you be my Valentine? ❤️
   </div>
+</div>
 
-  <script src="script.js"></script>
+<!-- FLOATING HEARTS -->
+<div id="hearts"></div>
+
+<!-- CARD -->
+<div class="card">
+  <div class="buttons">
+    <button id="yesBtn">Yes 💖</button>
+    <button id="noBtn">No 😢</button>
+  </div>
+</div>
+
+<!-- SOUNDS -->
+<audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+<audio id="yesSound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+
+<script src="script.js"></script>
 </body>
 </html>

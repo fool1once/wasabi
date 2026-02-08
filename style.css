@@ -1,53 +1,116 @@
-body {
-  background-color: #ffd6e0;
-  font-family: Arial, sans-serif;
-  height: 100vh;
-  margin: 0;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+* {
+  box-sizing: border-box;
 }
 
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(180deg, #ffd6e0, #ffeef3);
+  font-family: "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+
+/* CHAT BACKGROUND */
+.chat-bg {
+  position: fixed;
+  inset: 0;
+  padding: 20px;
+  z-index: 0;
+}
+
+.bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  margin: 12px 0;
+  font-size: 16px;
+  opacity: 0;
+  animation: appear 1s forwards;
+}
+
+.left {
+  background: #ffffff;
+  align-self: flex-start;
+}
+
+.right {
+  background: #ff4d6d;
+  color: white;
+  margin-left: auto;
+}
+
+.center {
+  background: #ffd6e0;
+  text-align: center;
+  margin: 20px auto;
+}
+
+.delay1 { animation-delay: 0.5s; }
+.delay2 { animation-delay: 1.5s; }
+.delay3 { animation-delay: 2.5s; }
+.delay4 { animation-delay: 3.5s; }
+.delay5 { animation-delay: 4.5s; }
+
+@keyframes appear {
+  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+/* CONFETTI */
 #confetti {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   pointer-events: none;
+  z-index: 2;
 }
 
+/* CARD */
 .card {
-  background: #ffeef3;
-  padding: 35px;
-  border-radius: 20px;
+  position: relative;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.95);
+  width: min(90%, 360px);
+  padding: 30px;
+  border-radius: 24px;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  z-index: 2;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  margin: auto;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+h1 {
+  margin-bottom: 30px;
 }
 
 .buttons {
   position: relative;
   height: 120px;
-  margin-top: 20px;
 }
 
+/* BUTTONS */
 button {
-  padding: 14px 28px;
+  padding: 14px 26px;
   font-size: 18px;
+  border-radius: 16px;
   border: none;
-  border-radius: 14px;
   cursor: pointer;
 }
 
 #yesBtn {
-  background-color: #ff4d6d;
+  background: #ff4d6d;
   color: white;
 }
 
 #noBtn {
-  background-color: #6c757d;
+  background: #6c757d;
   color: white;
   position: absolute;
-  left: 140px;
-  transition: transform 0.2s;
+  right: 0;
+}
+
+/* MOBILE TUNING */
+@media (max-width: 480px) {
+  h1 { font-size: 22px; }
+  button { font-size: 16px; }
 }

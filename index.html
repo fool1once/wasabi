@@ -53,7 +53,6 @@ body {
   padding: 12px 16px;
   border-radius: 18px;
   margin-bottom: 10px;
-  position: relative;
   animation: fadeIn .4s ease forwards;
 }
 
@@ -121,14 +120,13 @@ body {
   z-index: 5;
 }
 
-/* SAFE AREA FOR BUTTONS */
+/* SAFE AREA */
 .buttons {
   width: 280px;
   height: 80px;
   position: relative;
 }
 
-/* BUTTONS */
 button {
   padding: 14px 24px;
   font-size: 18px;
@@ -148,7 +146,7 @@ button {
   position: absolute;
   left: 180px;
   top: 0;
-  transition: left 0.25s ease, top 0.25s ease;
+  transition: left .25s ease, top .25s ease;
 }
 
 /* FLOATING EMOJI */
@@ -170,7 +168,6 @@ button {
 
 <body>
 
-<!-- TOP BAR -->
 <div class="top-bar">
   <div class="profile">
     <div class="avatar"></div>
@@ -179,10 +176,8 @@ button {
   <div class="icons">📞 🎥 ⓘ</div>
 </div>
 
-<!-- CHAT -->
 <div class="chat" id="chat"></div>
 
-<!-- BUTTONS -->
 <div class="card">
   <div class="buttons" id="buttonBox">
     <button id="yes">Yes 💖</button>
@@ -190,7 +185,6 @@ button {
   </div>
 </div>
 
-<!-- SOUNDS -->
 <audio id="pop" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 <audio id="yesSound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
@@ -221,11 +215,11 @@ function addBubble(text, side, reacts) {
 }
 
 function showTyping() {
-  const typing = document.createElement("div");
-  typing.className = "typing";
-  typing.innerHTML = "<span></span><span></span><span></span>";
-  chat.appendChild(typing);
-  return typing;
+  const t = document.createElement("div");
+  t.className = "typing";
+  t.innerHTML = "<span></span><span></span><span></span>";
+  chat.appendChild(t);
+  return t;
 }
 
 setTimeout(() => addBubble("Hi 👋", "left"), 600);
@@ -239,7 +233,10 @@ setTimeout(() => {
   addBubble("Will you be my Valentine? ❤️", "center", "❤️ 😍 🥰");
 }, 4300);
 
-/* ✅ FIXED NO BUTTON — NEVER GOES OFF SCREEN */
+/* ✅ FIXED NO BUTTON — NOT CLOSE TO LAST POSITION */
+let lastPos = { x: 180, y: 0 };
+const MIN_DISTANCE = 70;
+
 function moveNo() {
   pop.currentTime = 0;
   pop.play();
@@ -247,11 +244,17 @@ function moveNo() {
   const maxX = box.clientWidth - noBtn.offsetWidth;
   const maxY = box.clientHeight - noBtn.offsetHeight;
 
-  const x = Math.random() * maxX;
-  const y = Math.random() * maxY;
+  let x, y, d;
+
+  do {
+    x = Math.random() * maxX;
+    y = Math.random() * maxY;
+    d = Math.hypot(x - lastPos.x, y - lastPos.y);
+  } while (d < MIN_DISTANCE);
 
   noBtn.style.left = x + "px";
   noBtn.style.top = y + "px";
+  lastPos = { x, y };
 }
 
 noBtn.addEventListener("mouseenter", moveNo);
@@ -269,17 +272,20 @@ function floatEmoji() {
   setTimeout(()=>e.remove(),4000);
 }
 
-/* YES CLICK */
+/* YES CLICK — CELEBRATION + STORY */
 yesBtn.addEventListener("click", () => {
   yesSound.play();
 
   addBubble("YAY!! 🥹💘", "right", "❤️❤️😍");
-  setTimeout(() => addBubble("I knew you’d say yes 😳❤️", "left"), 800);
+  setTimeout(() => addBubble("You just made my entire day 😳❤️", "left"), 900);
+  setTimeout(() => addBubble("I was hoping you’d say yes…", "left"), 1800);
+  setTimeout(() => addBubble("So… when’s our date? 😏", "left"), 2800);
 
-  setInterval(floatEmoji, 220);
+  const party = setInterval(floatEmoji, 180);
+  setTimeout(() => clearInterval(party), 5000);
 
   document.querySelector(".card").innerHTML =
-    "<h2 style='text-align:center'>Best choice ever 💞</h2>";
+    "<h2 style='text-align:center'>💞 Valentine Locked In 💞<br><small>Screenshot this 😘</small></h2>";
 });
 </script>
 
